@@ -1,0 +1,23 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf8" />
+  <script src="elm.js"></script>
+</head>
+
+<body>
+  <main></main>
+  <script>
+    var app = Elm.Main.init({ node: document.querySelector('main') })
+    var myWorker = new Worker('worker.js');
+    myWorker.onmessage = function (e) {
+      app.ports.gotFile.send(e.data);
+    };
+
+    app.ports.sendFile.subscribe(file => {
+      myWorker.postMessage(file);
+    });
+  </script>
+</body>
+
+</html>
