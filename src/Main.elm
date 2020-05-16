@@ -21,19 +21,14 @@ type alias Model =
 
 
 view : Model -> Html Msg
-view model =
+view files =
     div []
         [ input
             [ Attributes.type_ "file"
             , Events.on "change" (Decode.map FileSelected filesDecoder)
             ]
             []
-        , case model of
-            [] ->
-                text ""
-
-            files ->
-                ul [] (List.map viewFile files)
+        , ul [] (List.map viewFile files)
         ]
 
 
