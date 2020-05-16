@@ -13,7 +13,7 @@ onmessage = function (e) {
     fileReader = new FileReader();
 
   fileReader.onload = function (e) {
-    console.log(file.name, 'read chunk nr', currentChunk + 1, 'of', chunks);
+    console.log(file.name, 'read chunk', currentChunk + 1, 'of', chunks);
     // Append array buffer
     spark.append(e.target.result);
     currentChunk++;
