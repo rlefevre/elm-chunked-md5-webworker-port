@@ -28,7 +28,6 @@ view model =
             , Events.on "change" (Decode.map FileSelected filesDecoder)
             ]
             []
-        , br [] []
         , case model of
             [] ->
                 text ""
