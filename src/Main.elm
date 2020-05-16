@@ -8,35 +8,16 @@ import Html.Events as Events
 import Json.Decode as Decode exposing (Decoder, Value)
 
 
+
+-- MODEL
+
+
 type alias Model =
     List ( File, String )
 
 
-type Msg
-    = FileSelected (List Value)
-    | FileReceived (Result Decode.Error ( File, String ))
 
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        FileSelected [] ->
-            ( model, Cmd.none )
-
-        FileSelected (file :: _) ->
-            ( model, sendFile file )
-
-        FileReceived (Ok ( file, md5 )) ->
-            ( ( file, md5 ) :: model, Cmd.none )
-
-        FileReceived (Err _) ->
-            ( model, Cmd.none )
-
-
-port gotFile : (Value -> msg) -> Sub msg
-
-
-port sendFile : Value -> Cmd msg
+-- VIEW
 
 
 view : Model -> Html Msg
@@ -66,6 +47,20 @@ viewFile ( file, md5 ) =
         ]
 
 
+
+-- PORTS
+
+
+port gotFile : (Value -> msg) -> Sub msg
+
+
+port sendFile : Value -> Cmd msg
+
+
+
+-- DECODERS
+
+
 filesDecoder : Decoder (List Value)
 filesDecoder =
     Decode.at [ "target", "files" ] (Decode.list Decode.value)
@@ -78,6 +73,44 @@ decodeFile =
         (Decode.at [ "hash" ] Decode.string)
 
 
+
+-- UPDATE
+
+
+type Msg
+    = FileSelected (List Value)
+    | FileReceived (Result Decode.Error ( File, String ))
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        FileSelected [] ->
+            ( model, Cmd.none )
+
+        FileSelected (file :: _) ->
+            ( model, sendFile file )
+
+        FileReceived (Ok ( file, md5 )) ->
+            ( ( file, md5 ) :: model, Cmd.none )
+
+        FileReceived (Err _) ->
+            ( model, Cmd.none )
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    gotFile (Decode.decodeValue decodeFile >> FileReceived)
+
+
+
+-- MAIN
+
+
 main : Program () Model Msg
 main =
     Browser.element
@@ -86,8 +119,3 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-
-
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    gotFile (Decode.decodeValue decodeFile >> FileReceived)
