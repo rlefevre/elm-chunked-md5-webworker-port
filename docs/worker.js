@@ -1,7 +1,7 @@
 importScripts('https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.0/spark-md5.js');
 
 onmessage = function (e) {
-  const file = e.data;
+  var file = e.data;
   console.log('Received file', file);
 
   var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
@@ -20,7 +20,7 @@ onmessage = function (e) {
       loadNext();
     } else {
       console.log('finished loading');
-      const md5 = spark.end();
+      var md5 = spark.end();
       console.info('computed hash', md5);  // Compute hash
       postMessage({ file: file, hash: md5 });
     }

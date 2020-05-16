@@ -16,7 +16,7 @@
       app.ports.gotFile.send(e.data);
     };
 
-    app.ports.sendFile.subscribe(file => {
+    app.ports.sendFile.subscribe(function(file) {
       myWorker.postMessage(file);
     });
   </script>
