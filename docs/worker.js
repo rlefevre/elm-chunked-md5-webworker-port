@@ -5,7 +5,8 @@ onmessage = function (e) {
   console.log('Received file', file);
 
   var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
-    chunkSize = 2097152,                             // Read in chunks of 2MB
+    // Read in chunks of 2MB
+    chunkSize = 2097152,
     chunks = Math.ceil(file.size / chunkSize),
     currentChunk = 0,
     spark = new SparkMD5.ArrayBuffer(),
@@ -13,21 +14,22 @@ onmessage = function (e) {
 
   fileReader.onload = function (e) {
     console.log(file.name, 'read chunk nr', currentChunk + 1, 'of', chunks);
-    spark.append(e.target.result);                   // Append array buffer
+    // Append array buffer
+    spark.append(e.target.result);
     currentChunk++;
 
     if (currentChunk < chunks) {
       loadNext();
     } else {
-      console.log('finished loading');
+      console.log(file.name, 'finished loading');
       var md5 = spark.end();
-      console.info('computed hash', md5);  // Compute hash
+      console.info(file.name, 'computed hash', md5);
       postMessage({ file: file, hash: md5 });
     }
   };
 
   fileReader.onerror = function () {
-    console.warn('oops, something went wrong.');
+    console.warn(file.name, 'oops, something went wrong.');
   };
 
   function loadNext() {
